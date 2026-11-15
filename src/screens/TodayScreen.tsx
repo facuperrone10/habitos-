@@ -1,11 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { DateHeader } from '../components/DateHeader'
+import { EditSectionSheet } from '../components/EditSectionSheet'
 import { MoodPicker } from '../components/MoodPicker'
 import { NoteField } from '../components/NoteField'
 import { SectionCard } from '../components/SectionCard'
 import { Toast, type ToastData } from '../components/Toast'
 import { ValueSheet } from '../components/ValueSheet'
-import type { Action } from '../db/types'
+import type { Action, Section } from '../db/types'
 import { getSetting, markCelebrated, setLogValue, setMood, setNote, toggleAction } from '../db/repo'
 import { useDayData } from '../hooks/useDayData'
 import { useToday } from '../hooks/useToday'
@@ -20,6 +21,7 @@ export function TodayScreen() {
   const data = useDayData(date)
 
   const [editing, setEditing] = useState<Action | null>(null)
+  const [editingSection, setEditingSection] = useState<Section | null>(null)
   const [glowId, setGlowId] = useState<string | null>(null)
   const [toast, setToast] = useState<ToastData | null>(null)
   const clearToast = useCallback(() => setToast(null), [])
@@ -84,6 +86,7 @@ export function TodayScreen() {
           glowing={glowId === s.section.id}
           onToggle={onToggle}
           onEditValue={setEditing}
+          onEditSection={() => setEditingSection(s.section)}
         />
       ))}
 
@@ -97,6 +100,10 @@ export function TodayScreen() {
           onSave={(v) => setLogValue(date, editing.id, v)}
           onClose={() => setEditing(null)}
         />
+      )}
+
+      {editingSection && (
+        <EditSectionSheet section={editingSection} onClose={() => setEditingSection(null)} />
       )}
 
       <Toast toast={toast} onDone={clearToast} />

@@ -1,3 +1,4 @@
+import { Pencil } from 'lucide-react'
 import { useEffect, useRef, type CSSProperties } from 'react'
 import type { Action, Log } from '../db/types'
 import type { SectionWithActions } from '../hooks/useDayData'
@@ -11,9 +12,10 @@ interface Props {
   glowing: boolean
   onToggle: (action: Action) => void
   onEditValue: (action: Action) => void
+  onEditSection: () => void
 }
 
-export function SectionCard({ data, logsByAction, glowing, onToggle, onEditValue }: Props) {
+export function SectionCard({ data, logsByAction, glowing, onToggle, onEditValue, onEditSection }: Props) {
   const { section, actions } = data
   const Icon = sectionIcon(section.icon)
   const doneCount = actions.filter((a) => logsByAction.has(a.id)).length
@@ -43,7 +45,20 @@ export function SectionCard({ data, logsByAction, glowing, onToggle, onEditValue
         >
           {doneCount}/{actions.length}
         </span>
+        <button
+          type="button"
+          aria-label={`Editar ${section.name}`}
+          onClick={onEditSection}
+          className="-mr-2 flex h-9 w-9 items-center justify-center rounded-full text-neutral-300 active:bg-neutral-100"
+        >
+          <Pencil size={16} />
+        </button>
       </header>
+      {actions.length === 0 && (
+        <button type="button" onClick={onEditSection} className="text-sm text-neutral-400">
+          Sin acciones visibles · tocá el lápiz para agregar
+        </button>
+      )}
       <div className="flex flex-wrap gap-2">
         {actions.map((a) => {
           const log = logsByAction.get(a.id)

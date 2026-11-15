@@ -61,3 +61,38 @@ export async function getSetting<T>(key: string, fallback: T): Promise<T> {
   const s = await db.settings.get(key)
   return (s?.value as T) ?? fallback
 }
+
+// ---------- Edición de acciones ----------
+
+export async function addAction(sectionId: string, name: string) {
+  const clean = name.trim()
+  if (!clean) return
+  const siblings = await db.actions.where('sectionId').equals(sectionId).toArray()
+  const maxOrder = siblings.reduce((m, a) => Math.max(m, a.order), -1)
+  await db.actions.add({
+    id: crypto.randomUUID(), sectionId, name: clean, order: maxOrder + 1,
+    hasValue: false, unit: null, trackStreak: true, createdAt: nowIso(), archivedAt: null,
+  })
+}
+
+export async function updateAction(id: string, patch: Partial<Omit<Action, 'id' | 'sectionId'>>) {
+  await db.actions.update(id, patch)
+}
+
+// Ocultar = archivar: desaparece de "Hoy" pero conserva su historial.
+export const setActionHidden = (id: string, hidden: boolean) =>
+  db.actions.update(id, { archivedAt: hidden ? nowIso() : null })
+
+/** Mueve una acción visible una posición arriba (-1) o abajo (+1) dentro de su sección. */
+export async function moveAction(sectionId: string, id: string, dir: -1 | 1) {
+  await db.transaction('rw', db.actions, async () => {
+    const list = (await db.actions.where('sectionId').equals(sectionId).toArray())
+      .filter((a) => !a.archivedAt)
+      .sort((a, b) => a.order - b.order)
+    const i = list.findIndex((a) => a.id === id)
+    const j = i + dir
+    if (i < 0 || j < 0 || j >= list.length) return
+    ;[list[i], list[j]] = [list[j], list[i]]
+    await Promise.all(list.map((a, idx) => db.actions.update(a.id, { order: idx })))
+  })
+}

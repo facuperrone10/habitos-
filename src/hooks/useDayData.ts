@@ -29,8 +29,7 @@ export function useDayData(date: string): DayData | undefined {
         .map((section) => ({
           section,
           actions: activeActions.filter((a) => a.sectionId === section.id),
-        }))
-        .filter((s) => s.actions.length > 0),
+        })),
       logsByAction: new Map(logs.map((l) => [l.actionId, l])),
       day,
     }

@@ -9,10 +9,12 @@ function requiredActions(actions: Action[]): Action[] {
 }
 
 export function isSectionComplete(s: SectionWithActions, done: Set<string>): boolean {
+  if (s.actions.length === 0) return false
   return requiredActions(s.actions).every((a) => done.has(a.id))
 }
 
 // Día completo = todas las secciones visibles con al menos 1 acción hecha.
 export function isDayComplete(sections: SectionWithActions[], done: Set<string>): boolean {
-  return sections.length > 0 && sections.every((s) => s.actions.some((a) => done.has(a.id)))
+  const active = sections.filter((s) => s.actions.length > 0)
+  return active.length > 0 && active.every((s) => s.actions.some((a) => done.has(a.id)))
 }
