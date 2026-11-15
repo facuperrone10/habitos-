@@ -9,16 +9,24 @@ import { ValueSheet } from '../components/ValueSheet'
 import type { Action, Section } from '../db/types'
 import { getSetting, markCelebrated, setLogValue, setMood, setNote, toggleAction } from '../db/repo'
 import { useDayData } from '../hooks/useDayData'
+import { useHistory } from '../hooks/useHistory'
 import { useToday } from '../hooks/useToday'
 import { celebrateDay } from '../lib/confetti'
 import { formatLong } from '../lib/date'
 import { isDayComplete, isSectionComplete } from '../lib/progress'
 import { playTick } from '../lib/sound'
+import { currentStreak } from '../lib/streaks'
 
-export function TodayScreen() {
+interface Props {
+  date: string
+  setDate: (date: string) => void
+}
+
+export function TodayScreen({ date, setDate }: Props) {
   const today = useToday()
-  const [date, setDate] = useState(today)
   const data = useDayData(date)
+  const history = useHistory()
+  const streakOf = (dates: Set<string> | undefined) => (dates ? currentStreak(dates, date, today) : 0)
 
   const [editing, setEditing] = useState<Action | null>(null)
   const [editingSection, setEditingSection] = useState<Section | null>(null)
@@ -59,13 +67,13 @@ export function TodayScreen() {
     }
   }
 
-  if (!data) return null
+  if (!data || !history) return null
 
   const editingColor = editing ? data.sections.find((s) => s.section.id === editing.sectionId)?.section.color : undefined
 
   return (
     <div className="space-y-4">
-      <DateHeader date={date} today={today} onChange={setDate} />
+      <DateHeader date={date} today={today} onChange={setDate} streak={streakOf(history?.general)} />
 
       {date !== today && (
         <div className="flex items-center justify-between rounded-2xl bg-amber-50 px-4 py-2.5 text-sm text-amber-800 ring-1 ring-amber-200">
@@ -80,10 +88,12 @@ export function TodayScreen() {
 
       {data.sections.map((s) => (
         <SectionCard
-          key={s.section.id}
+          key={`${date}-${s.section.id}`} // remonta al cambiar de día: el "+1" solo aparece al marcar
           data={s}
           logsByAction={data.logsByAction}
           glowing={glowId === s.section.id}
+          sectionStreak={streakOf(history?.bySection.get(s.section.id))}
+          actionStreak={(id) => streakOf(history?.byAction.get(id))}
           onToggle={onToggle}
           onEditValue={setEditing}
           onEditSection={() => setEditingSection(s.section)}

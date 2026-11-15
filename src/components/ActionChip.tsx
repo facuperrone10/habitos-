@@ -1,3 +1,4 @@
+import { Flame } from 'lucide-react'
 import { useRef, useState, type CSSProperties, type PointerEvent } from 'react'
 import type { Action } from '../db/types'
 import { pop, prefersReducedMotion } from '../lib/motion'
@@ -7,6 +8,7 @@ interface Props {
   color: string
   done: boolean
   value: number | null
+  streak: number
   onToggle: (action: Action) => void
   onEditValue: (action: Action) => void
 }
@@ -18,7 +20,7 @@ const PARTICLES = 8
  * el tap real del usuario activa ese interruptor nativo y iOS dispara la vibración
  * (Taptic Engine). Si Safari deja de hacerlo, todo lo visual sigue funcionando.
  */
-export function ActionChip({ action, color, done, value, onToggle, onEditValue }: Props) {
+export function ActionChip({ action, color, done, value, streak, onToggle, onEditValue }: Props) {
   const wrapRef = useRef<HTMLDivElement>(null)
   const [burst, setBurst] = useState(0)
 
@@ -56,6 +58,12 @@ export function ActionChip({ action, color, done, value, onToggle, onEditValue }
             <path d="M5 12.5l4.5 4.5L19 7.5" pathLength={1} />
           </svg>
           <span>{action.name}</span>
+          {action.trackStreak && streak >= 3 && (
+            <span className="chip-streak" aria-label={`Racha de ${streak} días`}>
+              <Flame size={12} strokeWidth={2.6} />
+              {streak}
+            </span>
+          )}
         </span>
         {burst > 0 && (
           <span key={burst} className="chip-burst" aria-hidden>

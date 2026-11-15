@@ -1,13 +1,15 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { addDays, formatLong, relativeLabel } from '../lib/date'
+import { StreakBadge } from './StreakBadge'
 
 interface Props {
   date: string
   today: string
   onChange: (date: string) => void
+  streak: number
 }
 
-export function DateHeader({ date, today, onChange }: Props) {
+export function DateHeader({ date, today, onChange, streak }: Props) {
   const rel = relativeLabel(date, today)
   const isToday = date === today
 
@@ -19,7 +21,10 @@ export function DateHeader({ date, today, onChange }: Props) {
 
       {/* El input de fecha transparente encima abre el selector nativo de iOS. */}
       <div className="relative text-center">
-        <div className="text-xs font-semibold uppercase tracking-wider text-neutral-400">{rel ?? ' '}</div>
+        <div className="flex h-5 items-center justify-center gap-2 text-xs font-semibold uppercase tracking-wider text-neutral-400">
+          {rel && <span>{rel}</span>}
+          <StreakBadge key={date} value={streak} color="#F76B15" />
+        </div>
         <div className="text-lg font-bold tracking-tight text-neutral-900">{formatLong(date)}</div>
         <input
           type="date"

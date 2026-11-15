@@ -5,17 +5,20 @@ import type { SectionWithActions } from '../hooks/useDayData'
 import { sectionIcon } from '../lib/icons'
 import { bump } from '../lib/motion'
 import { ActionChip } from './ActionChip'
+import { StreakBadge } from './StreakBadge'
 
 interface Props {
   data: SectionWithActions
   logsByAction: Map<string, Log>
   glowing: boolean
+  sectionStreak: number
+  actionStreak: (actionId: string) => number
   onToggle: (action: Action) => void
   onEditValue: (action: Action) => void
   onEditSection: () => void
 }
 
-export function SectionCard({ data, logsByAction, glowing, onToggle, onEditValue, onEditSection }: Props) {
+export function SectionCard({ data, logsByAction, glowing, sectionStreak, actionStreak, onToggle, onEditValue, onEditSection }: Props) {
   const { section, actions } = data
   const Icon = sectionIcon(section.icon)
   const doneCount = actions.filter((a) => logsByAction.has(a.id)).length
@@ -38,9 +41,10 @@ export function SectionCard({ data, logsByAction, glowing, onToggle, onEditValue
           <Icon size={16} strokeWidth={2.4} />
         </span>
         <h2 className="flex-1 text-[15px] font-semibold tracking-tight text-neutral-800">{section.name}</h2>
+        <StreakBadge value={sectionStreak} color={section.color} />
         <span
           ref={countRef}
-          className="inline-block text-sm font-semibold tabular-nums"
+          className="ml-2 inline-block text-sm font-semibold tabular-nums"
           style={{ color: doneCount ? section.color : '#a3a3a3' }}
         >
           {doneCount}/{actions.length}
@@ -69,6 +73,7 @@ export function SectionCard({ data, logsByAction, glowing, onToggle, onEditValue
               color={section.color}
               done={Boolean(log)}
               value={log?.value ?? null}
+              streak={actionStreak(a.id)}
               onToggle={onToggle}
               onEditValue={onEditValue}
             />
