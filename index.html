@@ -11,6 +11,15 @@
     <link rel="icon" type="image/png" href="/icons/icon-192.png" />
     <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
     <title>Hábitos</title>
+    <script>
+      // Aplica el tema antes de pintar (evita un destello claro en modo oscuro).
+      try {
+        var t = localStorage.getItem('habitos-theme') || 'system'
+        if (t === 'dark' || (t === 'system' && matchMedia('(prefers-color-scheme: dark)').matches)) {
+          document.documentElement.classList.add('dark')
+        }
+      } catch (e) {}
+    </script>
   </head>
   <body>
     <div id="root"></div>

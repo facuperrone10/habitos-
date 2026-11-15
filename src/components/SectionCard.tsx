@@ -45,7 +45,7 @@ export function SectionCard({ data, logsByAction, glowing, sectionStreak, action
         <span
           ref={countRef}
           className="ml-2 inline-block text-sm font-semibold tabular-nums"
-          style={{ color: doneCount ? section.color : '#a3a3a3' }}
+          style={{ color: doneCount ? section.color : 'var(--color-neutral-400)' }}
         >
           {doneCount}/{actions.length}
         </span>

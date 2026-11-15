@@ -32,7 +32,7 @@ export function EditSectionSheet({ section, onClose }: Props) {
     <div className="fixed inset-0 z-40 flex items-end" role="dialog" aria-modal>
       <button type="button" aria-label="Cerrar" className="sheet-backdrop absolute inset-0 bg-black/30" onClick={onClose} />
       <div
-        className="sheet relative flex max-h-[88vh] w-full flex-col rounded-t-3xl bg-[#f6f6f4] shadow-2xl"
+        className="sheet relative flex max-h-[88vh] w-full flex-col rounded-t-3xl bg-page shadow-2xl"
         style={{ '--c': section.color } as CSSProperties}
       >
         <header className="flex items-center gap-2 px-5 pt-4 pb-3">
@@ -60,7 +60,7 @@ export function EditSectionSheet({ section, onClose }: Props) {
           </div>
 
           <form
-            className="flex items-center gap-2 rounded-2xl bg-white p-2 pl-4 ring-1 ring-black/5"
+            className="flex items-center gap-2 rounded-2xl bg-surface p-2 pl-4 ring-1 ring-black/5"
             onSubmit={(e) => { e.preventDefault(); submitNew() }}
           >
             <input
@@ -85,10 +85,10 @@ export function EditSectionSheet({ section, onClose }: Props) {
               </div>
               <div className="space-y-2">
                 {hidden.map((a) => (
-                  <div key={a.id} className="flex items-center gap-3 rounded-2xl bg-white/60 py-2 pr-2 pl-4 ring-1 ring-black/5">
+                  <div key={a.id} className="flex items-center gap-3 rounded-2xl bg-surface/60 py-2 pr-2 pl-4 ring-1 ring-black/5">
                     <span className="flex-1 text-[15px] text-neutral-400">{a.name}</span>
                     <button type="button" onClick={() => setActionHidden(a.id, false)}
-                      className="flex items-center gap-1.5 rounded-full bg-white px-3 py-2 text-sm font-semibold ring-1 ring-black/10"
+                      className="flex items-center gap-1.5 rounded-full bg-surface px-3 py-2 text-sm font-semibold ring-1 ring-black/10"
                       style={{ color: section.color }}>
                       <Eye size={16} /> Mostrar
                     </button>
@@ -129,7 +129,7 @@ function ActionRow({ action, isFirst, isLast, onMove }: {
       : { hasValue: true, unit: unit.trim() || 'min' })
 
   return (
-    <div className="rounded-2xl bg-white p-2 pl-3 ring-1 ring-black/5">
+    <div className="rounded-2xl bg-surface p-2 pl-3 ring-1 ring-black/5">
       <div className="flex items-center gap-1">
         <input
           value={name}
@@ -183,7 +183,7 @@ function Toggle({ on, onClick, children }: { on: boolean; onClick: () => void; c
       className="rounded-full px-3 py-1.5 text-sm font-semibold transition-colors"
       style={on
         ? { background: 'var(--c)', color: 'white' }
-        : { background: '#f1f1f0', color: '#8a8a8a' }}>
+        : { background: 'var(--color-neutral-100)', color: 'var(--color-neutral-500)' }}>
       {children}
     </button>
   )

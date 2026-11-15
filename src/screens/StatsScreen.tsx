@@ -39,7 +39,7 @@ export function StatsScreen() {
             role="tab"
             aria-selected={period === p}
             onClick={() => setPeriod(p)}
-            className={`rounded-full px-3 py-1.5 text-sm font-semibold transition-colors ${period === p ? 'bg-white text-neutral-900 shadow-sm' : 'text-neutral-500'}`}
+            className={`rounded-full px-3 py-1.5 text-sm font-semibold transition-colors ${period === p ? 'bg-surface text-neutral-900 shadow-sm' : 'text-neutral-500'}`}
           >
             {p} d
           </button>
@@ -174,7 +174,7 @@ export function StatsScreen() {
 
 function Card({ title, subtitle, children }: { title: string; subtitle?: string; children: ReactNode }) {
   return (
-    <section className="rounded-3xl bg-white p-4 shadow-sm ring-1 ring-black/5">
+    <section className="rounded-3xl bg-surface p-4 shadow-sm ring-1 ring-black/5">
       <h2 className="text-[15px] font-bold text-neutral-900">{title}</h2>
       {subtitle && <p className="mb-3 text-xs text-neutral-400">{subtitle}</p>}
       {!subtitle && <div className="mb-2" />}

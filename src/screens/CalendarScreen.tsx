@@ -9,7 +9,8 @@ import { fromKey, toKey } from '../lib/date'
 import { currentStreak, longestStreak } from '../lib/streaks'
 
 const GENERAL = 'general'
-const GENERAL_COLOR = '#1f2328'
+const GENERAL_COLOR = 'var(--ink)' // en oscuro se vuelve claro
+const onFill = (color: string) => (color === GENERAL_COLOR ? 'var(--surface)' : 'white')
 const WEEKDAYS = ['L', 'M', 'M', 'J', 'V', 'S', 'D']
 const LEVEL_MIX = [0, 22, 45, 70, 100] // % del color por nivel de cumplimiento
 
@@ -86,7 +87,7 @@ export function CalendarScreen({ onSelectDay }: Props) {
         ))}
       </div>
 
-      <div className="rounded-3xl bg-white p-4 shadow-sm ring-1 ring-black/5">
+      <div className="rounded-3xl bg-surface p-4 shadow-sm ring-1 ring-black/5">
         <div className="mb-3 flex items-center justify-between">
           <button type="button" aria-label="Mes anterior" className="nav-btn" onClick={() => shiftMonth(-1)}>
             <ChevronLeft size={22} />
@@ -116,8 +117,8 @@ export function CalendarScreen({ onSelectDay }: Props) {
                 onClick={() => onSelectDay(d)}
                 className={`cal-cell ${d === today ? 'cal-cell--today' : ''} disabled:opacity-30`}
                 style={{
-                  background: level ? `color-mix(in srgb, ${color} ${mix}%, white)` : '#f3f3f1',
-                  color: level >= 3 ? 'white' : '#525252',
+                  background: level ? `color-mix(in srgb, ${color} ${mix}%, var(--surface))` : 'var(--muted-surface)',
+                  color: level >= 3 ? onFill(color) : 'var(--color-neutral-600)',
                 }}
               >
                 {Number(d.slice(8))}
@@ -129,7 +130,7 @@ export function CalendarScreen({ onSelectDay }: Props) {
         <div className="mt-3 flex items-center justify-end gap-1.5 text-xs text-neutral-400">
           Menos
           {LEVEL_MIX.map((m, i) => (
-            <span key={i} className="h-3.5 w-3.5 rounded" style={{ background: i ? `color-mix(in srgb, ${color} ${m}%, white)` : '#f3f3f1' }} />
+            <span key={i} className="h-3.5 w-3.5 rounded" style={{ background: i ? `color-mix(in srgb, ${color} ${m}%, var(--surface))` : 'var(--muted-surface)' }} />
           ))}
           Más
         </div>
@@ -171,8 +172,8 @@ function FilterChip({ active, color, onClick, children }: {
       onClick={onClick}
       className="shrink-0 rounded-full px-4 py-2 text-sm font-semibold whitespace-nowrap transition-colors"
       style={active
-        ? { background: color, color: 'white' }
-        : { background: `color-mix(in srgb, ${color} 9%, white)`, color }}
+        ? { background: color, color: onFill(color) }
+        : { background: `color-mix(in srgb, ${color} 9%, var(--surface))`, color }}
     >
       {children}
     </button>
@@ -181,7 +182,7 @@ function FilterChip({ active, color, onClick, children }: {
 
 function Stat({ label, value, children }: { label: string; value?: string; children?: ReactNode }) {
   return (
-    <div className="rounded-2xl bg-white px-3 py-3 text-center shadow-sm ring-1 ring-black/5">
+    <div className="rounded-2xl bg-surface px-3 py-3 text-center shadow-sm ring-1 ring-black/5">
       <div className="flex h-7 items-center justify-center text-xl font-bold tabular-nums text-neutral-900">
         {value ?? children}
       </div>

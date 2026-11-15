@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { BackupBanner } from '../components/BackupBanner'
 import { DateHeader } from '../components/DateHeader'
 import { EditSectionSheet } from '../components/EditSectionSheet'
 import { MoodPicker } from '../components/MoodPicker'
@@ -68,6 +69,7 @@ export function TodayScreen({ date, setDate }: Props) {
   }
 
   if (!data || !history) return null
+  const firstLogDate = history.byDate.size ? [...history.byDate.keys()].sort()[0] : null
 
   const editingColor = editing ? data.sections.find((s) => s.section.id === editing.sectionId)?.section.color : undefined
 
@@ -83,6 +85,8 @@ export function TodayScreen({ date, setDate }: Props) {
           </button>
         </div>
       )}
+
+      {date === today && <BackupBanner firstLogDate={firstLogDate} />}
 
       <MoodPicker mood={data.day?.mood ?? null} onChange={(m) => setMood(date, m)} />
 

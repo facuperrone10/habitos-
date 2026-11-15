@@ -11,7 +11,7 @@ const TABS: { id: Tab; label: string; Icon: LucideIcon }[] = [
 
 export function BottomNav({ tab, onChange }: { tab: Tab; onChange: (t: Tab) => void }) {
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-20 border-t border-black/5 bg-white/90 pb-[env(safe-area-inset-bottom)] backdrop-blur-md">
+    <nav className="fixed inset-x-0 bottom-0 z-20 border-t border-black/5 bg-surface/90 pb-[env(safe-area-inset-bottom)] backdrop-blur-md">
       <div className="mx-auto flex max-w-md">
         {TABS.map(({ id, label, Icon }) => {
           const active = id === tab

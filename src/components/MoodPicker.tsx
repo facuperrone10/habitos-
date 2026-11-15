@@ -17,7 +17,7 @@ interface Props {
 
 export function MoodPicker({ mood, onChange }: Props) {
   return (
-    <div className="flex justify-between rounded-2xl bg-white px-3 py-2 shadow-sm ring-1 ring-black/5">
+    <div className="flex justify-between rounded-2xl bg-surface px-3 py-2 shadow-sm ring-1 ring-black/5">
       {MOODS.map(({ value, Icon, color, label }) => {
         const active = mood === value
         return (
@@ -31,7 +31,7 @@ export function MoodPicker({ mood, onChange }: Props) {
               onChange(active ? null : value) // tocar de nuevo = quitar
             }}
             className="flex h-12 w-12 items-center justify-center rounded-full transition-colors duration-200"
-            style={{ background: active ? `${color}22` : 'transparent', color: active ? color : '#c4c4c4' }}
+            style={{ background: active ? `${color}22` : 'transparent', color: active ? color : 'var(--color-neutral-300)' }}
           >
             <Icon size={30} strokeWidth={active ? 2.3 : 1.8} />
           </button>

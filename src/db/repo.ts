@@ -1,6 +1,6 @@
 // Operaciones de escritura. La UI nunca toca Dexie directo para escribir.
 import { db } from './db'
-import type { Action, Day, Mood } from './types'
+import type { Action, Day, Mood, Section } from './types'
 
 const nowIso = () => new Date().toISOString()
 
@@ -94,5 +94,31 @@ export async function moveAction(sectionId: string, id: string, dir: -1 | 1) {
     if (i < 0 || j < 0 || j >= list.length) return
     ;[list[i], list[j]] = [list[j], list[i]]
     await Promise.all(list.map((a, idx) => db.actions.update(a.id, { order: idx })))
+  })
+}
+
+// ---------- Edición de secciones ----------
+
+export async function addSection(name: string, color: string, icon: string): Promise<string> {
+  const all = await db.sections.toArray()
+  const id = crypto.randomUUID()
+  await db.sections.add({
+    id, name: name.trim() || 'Nueva sección', icon, color,
+    order: all.reduce((m, s) => Math.max(m, s.order), -1) + 1,
+    hidden: false, createdAt: nowIso(), archivedAt: null,
+  })
+  return id
+}
+
+export const updateSection = (id: string, patch: Partial<Omit<Section, 'id'>>) => db.sections.update(id, patch)
+
+export async function moveSection(id: string, dir: -1 | 1) {
+  await db.transaction('rw', db.sections, async () => {
+    const list = (await db.sections.toArray()).filter((s) => !s.archivedAt).sort((a, b) => a.order - b.order)
+    const i = list.findIndex((s) => s.id === id)
+    const j = i + dir
+    if (i < 0 || j < 0 || j >= list.length) return
+    ;[list[i], list[j]] = [list[j], list[i]]
+    await Promise.all(list.map((s, idx) => db.sections.update(s.id, { order: idx })))
   })
 }

@@ -32,7 +32,7 @@ export function ValueSheet({ action, color, value, onSave, onClose }: Props) {
   return (
     <div className="fixed inset-0 z-40 flex items-end" role="dialog" aria-modal>
       <button type="button" aria-label="Cerrar" className="sheet-backdrop absolute inset-0 bg-black/30" onClick={onClose} />
-      <div className="sheet relative w-full rounded-t-3xl bg-white px-5 pt-3 pb-[calc(env(safe-area-inset-bottom)+16px)] shadow-2xl">
+      <div className="sheet relative w-full rounded-t-3xl bg-surface px-5 pt-3 pb-[calc(env(safe-area-inset-bottom)+16px)] shadow-2xl">
         <div className="mx-auto mb-4 h-1.5 w-10 rounded-full bg-neutral-200" />
         <div className="mb-3 text-sm font-medium text-neutral-500">{action.name}</div>
         <form

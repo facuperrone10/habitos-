@@ -3,7 +3,7 @@ import { BottomNav, type Tab } from './components/BottomNav'
 import { UpdatePrompt } from './components/UpdatePrompt'
 import { todayKey } from './lib/date'
 import { CalendarScreen } from './screens/CalendarScreen'
-import { PlaceholderScreen } from './screens/PlaceholderScreen'
+import { SettingsScreen } from './screens/SettingsScreen'
 import { StatsScreen } from './screens/StatsScreen'
 import { TodayScreen } from './screens/TodayScreen'
 
@@ -33,7 +33,7 @@ export default function App() {
           />
         )}
         {tab === 'stats' && <StatsScreen />}
-        {tab === 'ajustes' && <PlaceholderScreen title="Ajustes" phase="fase 5" />}
+        {tab === 'ajustes' && <SettingsScreen />}
       </main>
       <BottomNav tab={tab} onChange={changeTab} />
     </>

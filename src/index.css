@@ -1,8 +1,54 @@
 @import "tailwindcss";
 
+/* Modo oscuro por clase: <html class="dark"> (la decide src/lib/theme.ts). */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme inline {
+  --color-page: var(--page);
+  --color-surface: var(--surface);
+}
+
+/* ---------- Tokens de color (claro / oscuro) ---------- */
+:root {
+  --page: #f6f6f4;
+  --surface: #ffffff;
+  --muted-surface: #f3f3f1;
+  --ink: #1f2328;
+  color-scheme: light;
+}
+/* En oscuro se invierte la escala de grises de Tailwind: todas las clases
+   text-neutral-*, bg-neutral-* y los tonos de aviso se adaptan sin tocar componentes. */
+.dark {
+  --page: #0f1011;
+  --surface: #1b1c1e;
+  --muted-surface: #25262a;
+  --ink: #ececea;
+  color-scheme: dark;
+  --color-neutral-50: oklch(0.2 0 0);
+  --color-neutral-100: oklch(0.27 0 0);
+  --color-neutral-200: oklch(0.33 0 0);
+  --color-neutral-300: oklch(0.44 0 0);
+  --color-neutral-400: oklch(0.6 0 0);
+  --color-neutral-500: oklch(0.7 0 0);
+  --color-neutral-600: oklch(0.8 0 0);
+  --color-neutral-700: oklch(0.87 0 0);
+  --color-neutral-800: oklch(0.93 0 0);
+  --color-neutral-900: oklch(0.97 0 0);
+  --color-amber-50: oklch(0.28 0.05 75);
+  --color-amber-200: oklch(0.4 0.08 75);
+  --color-amber-800: oklch(0.88 0.1 85);
+  --color-emerald-50: oklch(0.28 0.05 160);
+  --color-emerald-700: oklch(0.8 0.14 160);
+  --color-red-50: oklch(0.28 0.06 25);
+  --color-red-700: oklch(0.78 0.14 25);
+  --color-black: #000;
+}
+.dark .ring-black\/5 { --tw-ring-color: rgb(255 255 255 / 0.06); }
+.dark .border-black\/5 { border-color: rgb(255 255 255 / 0.07); }
+
 /* ---------- Base ---------- */
 html, body {
-  background: #f6f6f4;
+  background: var(--page);
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation; /* sin zoom por doble tap, tap más rápido */
   overscroll-behavior-y: none;
@@ -15,19 +61,19 @@ button, label { -webkit-user-select: none; user-select: none; cursor: pointer; }
 
 .nav-btn {
   display: flex; height: 44px; width: 44px; align-items: center; justify-content: center;
-  border-radius: 9999px; color: #525252;
+  border-radius: 9999px; color: var(--color-neutral-600);
 }
 .nav-btn:active { background: rgb(0 0 0 / 0.05); }
 
 /* ---------- Tarjeta de sección ---------- */
 .section-card {
-  border-radius: 1.25rem; background: white; padding: 14px 14px 16px;
-  box-shadow: 0 1px 2px rgb(0 0 0 / 0.04); outline: 1px solid rgb(0 0 0 / 0.05);
+  border-radius: 1.25rem; background: var(--surface); padding: 14px 14px 16px;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.04); outline: 1px solid color-mix(in srgb, var(--ink) 6%, transparent);
 }
 .section-icon {
   display: flex; height: 28px; width: 28px; align-items: center; justify-content: center;
   border-radius: 9px; color: var(--c);
-  background: color-mix(in srgb, var(--c) 14%, white);
+  background: color-mix(in srgb, var(--c) 14%, var(--surface));
 }
 .section-card--glow { animation: glow 1.2s ease-out; }
 @keyframes glow {
@@ -42,9 +88,9 @@ button, label { -webkit-user-select: none; user-select: none; cursor: pointer; }
 .chip {
   position: relative; display: inline-flex; align-items: center;
   min-height: 46px; padding: 0 16px; border-radius: 9999px;
-  font-size: 15px; font-weight: 600; color: color-mix(in srgb, var(--c) 70%, #1f2328);
-  background: color-mix(in srgb, var(--c) 9%, white);
-  box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--c) 22%, white);
+  font-size: 15px; font-weight: 600; color: color-mix(in srgb, var(--c) 70%, var(--ink));
+  background: color-mix(in srgb, var(--c) 9%, var(--surface));
+  box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--c) 22%, var(--surface));
   overflow: visible; isolation: isolate;
   transition: color 180ms ease;
 }
@@ -136,7 +182,11 @@ button, label { -webkit-user-select: none; user-select: none; cursor: pointer; }
   aspect-ratio: 1; border-radius: 12px; display: flex; align-items: center; justify-content: center;
   font-size: 14px; font-weight: 600; position: relative;
 }
-.cal-cell--today { box-shadow: inset 0 0 0 2px #1f2328; }
+.cal-cell--today { box-shadow: inset 0 0 0 2px var(--ink); }
 
 /* ---------- Estadísticas ---------- */
 .stat-bar { transition: width 500ms cubic-bezier(.2,.8,.2,1); min-width: 0; }
+
+/* ---------- Diálogo ---------- */
+.dialog { animation: dialog-in 200ms cubic-bezier(.2,.8,.2,1); }
+@keyframes dialog-in { from { opacity: 0; transform: scale(.94); } }

@@ -32,7 +32,7 @@ export function NoteField({ date, note, onSave }: Props) {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="flex w-full items-center gap-3 rounded-2xl bg-white px-4 py-3.5 text-left shadow-sm ring-1 ring-black/5"
+        className="flex w-full items-center gap-3 rounded-2xl bg-surface px-4 py-3.5 text-left shadow-sm ring-1 ring-black/5"
       >
         <NotebookPen size={18} className="shrink-0 text-neutral-400" />
         <span className={`line-clamp-2 text-[15px] ${note ? 'text-neutral-700' : 'text-neutral-400'}`}>
@@ -43,7 +43,7 @@ export function NoteField({ date, note, onSave }: Props) {
   }
 
   return (
-    <div className="rounded-2xl bg-white p-3 shadow-sm ring-1 ring-black/5">
+    <div className="rounded-2xl bg-surface p-3 shadow-sm ring-1 ring-black/5">
       <textarea
         autoFocus
         rows={3}
