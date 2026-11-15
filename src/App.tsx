@@ -4,6 +4,7 @@ import { UpdatePrompt } from './components/UpdatePrompt'
 import { todayKey } from './lib/date'
 import { CalendarScreen } from './screens/CalendarScreen'
 import { PlaceholderScreen } from './screens/PlaceholderScreen'
+import { StatsScreen } from './screens/StatsScreen'
 import { TodayScreen } from './screens/TodayScreen'
 
 export default function App() {
@@ -31,7 +32,7 @@ export default function App() {
             }}
           />
         )}
-        {tab === 'stats' && <PlaceholderScreen title="Estadísticas" phase="fase 4" />}
+        {tab === 'stats' && <StatsScreen />}
         {tab === 'ajustes' && <PlaceholderScreen title="Ajustes" phase="fase 5" />}
       </main>
       <BottomNav tab={tab} onChange={changeTab} />
