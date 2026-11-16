@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { BackupBanner } from '../components/BackupBanner'
+import { OnePercentCard } from '../components/OnePercentCard'
+import type { IndexPoint } from '../lib/onePercent'
 import { DateHeader } from '../components/DateHeader'
 import { EditSectionSheet } from '../components/EditSectionSheet'
 import { MoodPicker } from '../components/MoodPicker'
@@ -21,9 +23,11 @@ import { currentStreak } from '../lib/streaks'
 interface Props {
   date: string
   setDate: (date: string) => void
+  indexPoints: IndexPoint[]
+  onOpenStats: () => void
 }
 
-export function TodayScreen({ date, setDate }: Props) {
+export function TodayScreen({ date, setDate, indexPoints, onOpenStats }: Props) {
   const today = useToday()
   const data = useDayData(date)
   const history = useHistory()
@@ -86,6 +90,8 @@ export function TodayScreen({ date, setDate }: Props) {
         </div>
       )}
 
+      {date === today && <OnePercentCard points={indexPoints} onOpen={onOpenStats} />}
+
       {date === today && <BackupBanner firstLogDate={firstLogDate} />}
 
       <MoodPicker mood={data.day?.mood ?? null} onChange={(m) => setMood(date, m)} />
@@ -97,6 +103,7 @@ export function TodayScreen({ date, setDate }: Props) {
           logsByAction={data.logsByAction}
           glowing={glowId === s.section.id}
           sectionStreak={streakOf(history?.bySection.get(s.section.id))}
+          votes={s.actions.reduce((n, a) => n + (history.byAction.get(a.id)?.size ?? 0), 0)}
           actionStreak={(id) => streakOf(history?.byAction.get(id))}
           onToggle={onToggle}
           onEditValue={setEditing}

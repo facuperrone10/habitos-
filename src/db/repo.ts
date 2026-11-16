@@ -122,3 +122,14 @@ export async function moveSection(id: string, dir: -1 | 1) {
     await Promise.all(list.map((s, idx) => db.sections.update(s.id, { order: idx })))
   })
 }
+
+// ---------- Peso ----------
+
+export async function addMeasurement(date: string, weightKg: number) {
+  // Un registro por día: si ya había uno, se reemplaza.
+  const existing = await db.measurements.where('date').equals(date).first()
+  if (existing) await db.measurements.update(existing.id, { weightKg })
+  else await db.measurements.add({ id: crypto.randomUUID(), date, weightKg, createdAt: nowIso() })
+}
+
+export const deleteMeasurement = (id: string) => db.measurements.delete(id)

@@ -1,6 +1,7 @@
 // Respaldo: exportar / importar. Formato JSON versionado (restaurable) y CSV (para Excel).
 import { db, SCHEMA_VERSION } from '../db/db'
-import type { Action, Day, Log, Section, Setting } from '../db/types'
+import { DEFAULT_IDENTITIES } from '../db/seed'
+import type { Action, Day, Log, Measurement, Section, Setting } from '../db/types'
 import { todayKey } from './date'
 
 export interface BackupFile {
@@ -12,13 +13,15 @@ export interface BackupFile {
   days: Day[]
   logs: Log[]
   settings: Setting[]
+  measurements?: Measurement[] // desde v2
 }
 
 async function collect(): Promise<BackupFile> {
-  const [sections, actions, days, logs, settings] = await Promise.all([
+  const [sections, actions, days, logs, settings, measurements] = await Promise.all([
     db.sections.toArray(), db.actions.toArray(), db.days.toArray(), db.logs.toArray(), db.settings.toArray(),
+    db.measurements.toArray(),
   ])
-  return { app: 'habitos', schemaVersion: SCHEMA_VERSION, exportedAt: new Date().toISOString(), sections, actions, days, logs, settings }
+  return { app: 'habitos', schemaVersion: SCHEMA_VERSION, exportedAt: new Date().toISOString(), sections, actions, days, logs, settings, measurements }
 }
 
 /**
@@ -114,13 +117,21 @@ export async function readBackup(f: File): Promise<ImportSummary> {
 
 /** Reemplaza TODOS los datos por los del respaldo, en una sola transacción (todo o nada). */
 export async function restoreBackup(data: BackupFile) {
-  await db.transaction('rw', [db.sections, db.actions, db.days, db.logs, db.settings], async () => {
-    await Promise.all([db.sections.clear(), db.actions.clear(), db.days.clear(), db.logs.clear(), db.settings.clear()])
+  await db.transaction('rw', [db.sections, db.actions, db.days, db.logs, db.settings, db.measurements], async () => {
+    await Promise.all([db.sections.clear(), db.actions.clear(), db.days.clear(), db.logs.clear(), db.settings.clear(), db.measurements.clear()])
     await db.sections.bulkAdd(data.sections)
     await db.actions.bulkAdd(data.actions ?? [])
     await db.days.bulkAdd(data.days ?? [])
     await db.logs.bulkAdd(data.logs)
     await db.settings.bulkAdd(data.settings ?? [])
+    await db.measurements.bulkAdd(data.measurements ?? [])
+    // Respaldo v1: completar identidades por defecto.
+    if (data.schemaVersion < 2) {
+      await db.sections.toCollection().modify((s) => {
+        if (s.identity == null) s.identity = DEFAULT_IDENTITIES[s.name] ?? null
+      })
+      await db.settings.put({ key: 'schemaVersion', value: 2 })
+    }
     await db.settings.put({ key: 'lastBackupAt', value: new Date().toISOString() })
   })
 }

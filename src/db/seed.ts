@@ -9,6 +9,7 @@ interface SeedAction {
 
 interface SeedSection {
   name: string
+  identity: string
   icon: string
   color: string
   actions: SeedAction[]
@@ -16,7 +17,7 @@ interface SeedSection {
 
 const DEFAULTS: SeedSection[] = [
   {
-    name: 'Salud', icon: 'heart', color: '#E5484D',
+    name: 'Salud', identity: 'Soy una persona sana', icon: 'heart', color: '#E5484D',
     actions: [
       { name: 'Dormí 7 h o más' },
       { name: 'Tomé 2 L de agua' },
@@ -25,7 +26,7 @@ const DEFAULTS: SeedSection[] = [
     ],
   },
   {
-    name: 'Deporte', icon: 'dumbbell', color: '#F76B15',
+    name: 'Deporte', identity: 'Soy alguien activo', icon: 'dumbbell', color: '#F76B15',
     actions: [
       { name: 'Fui al gym' },
       { name: 'Caminé', unit: 'min' },
@@ -34,7 +35,7 @@ const DEFAULTS: SeedSection[] = [
     ],
   },
   {
-    name: 'Estudio', icon: 'graduation', color: '#3E63DD',
+    name: 'Estudio', identity: 'Soy un estudiante constante', icon: 'graduation', color: '#3E63DD',
     actions: [
       { name: 'Estudié para la facu', unit: 'min' },
       { name: 'Practiqué inglés', unit: 'min' },
@@ -42,7 +43,7 @@ const DEFAULTS: SeedSection[] = [
     ],
   },
   {
-    name: 'Trabajo', icon: 'briefcase', color: '#12A594',
+    name: 'Trabajo', identity: 'Soy un profesional enfocado', icon: 'briefcase', color: '#12A594',
     actions: [
       { name: 'Cumplí la tarea prioritaria' },
       { name: 'Bloque de foco de 1 h o más' },
@@ -50,7 +51,7 @@ const DEFAULTS: SeedSection[] = [
     ],
   },
   {
-    name: 'Lectura', icon: 'book', color: '#8E4EC6',
+    name: 'Lectura', identity: 'Soy un lector', icon: 'book', color: '#8E4EC6',
     actions: [
       { name: 'Leí', unit: 'págs' },
       { name: 'Leí antes de dormir' },
@@ -58,7 +59,7 @@ const DEFAULTS: SeedSection[] = [
     ],
   },
   {
-    name: 'Finanzas familiares', icon: 'wallet', color: '#30A46C',
+    name: 'Finanzas familiares', identity: 'Cuido las finanzas de mi familia', icon: 'wallet', color: '#30A46C',
     actions: [
       { name: 'Registré gastos' },
       { name: 'Sin compras impulsivas' },
@@ -76,7 +77,7 @@ export async function seedDefaults(tx: Transaction) {
   DEFAULTS.forEach((s, si) => {
     const sectionId = crypto.randomUUID()
     sections.push({
-      id: sectionId, name: s.name, icon: s.icon, color: s.color,
+      id: sectionId, name: s.name, identity: s.identity, icon: s.icon, color: s.color,
       order: si, hidden: false, createdAt: now, archivedAt: null,
     })
     s.actions.forEach((a, ai) => {
@@ -89,7 +90,7 @@ export async function seedDefaults(tx: Transaction) {
   })
 
   const settings: Setting[] = [
-    { key: 'schemaVersion', value: 1 },
+    { key: 'schemaVersion', value: 2 },
     { key: 'weekStartsOn', value: 1 },
     { key: 'soundEnabled', value: false },
     { key: 'backupReminderEnabled', value: true },
@@ -100,3 +101,8 @@ export async function seedDefaults(tx: Transaction) {
   await tx.table('actions').bulkAdd(actions)
   await tx.table('settings').bulkAdd(settings)
 }
+
+/** Identidades por defecto, para completar secciones creadas antes de la v2. */
+export const DEFAULT_IDENTITIES: Record<string, string> = Object.fromEntries(
+  DEFAULTS.map((s) => [s.name, s.identity]),
+)

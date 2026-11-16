@@ -15,6 +15,7 @@ interface Props {
 export function SectionMetaSheet({ sectionId, onClose, onEditActions }: Props) {
   const section = useLiveQuery(() => db.sections.get(sectionId), [sectionId])
   const [name, setName] = useState<string | null>(null)
+  const [identity, setIdentity] = useState<string | null>(null)
 
   if (!section) return null
   const Icon = sectionIcon(section.icon)
@@ -53,6 +54,24 @@ export function SectionMetaSheet({ sectionId, onClose, onEditActions }: Props) {
         </header>
 
         <div className="flex-1 space-y-5 overflow-y-auto px-5 pb-[calc(env(safe-area-inset-bottom)+20px)]">
+          <div>
+            <Label>Identidad</Label>
+            <input
+              value={identity ?? section.identity ?? ''}
+              onChange={(e) => setIdentity(e.target.value)}
+              onBlur={() => {
+                if (identity !== null) updateSection(section.id, { identity: identity.trim() || null })
+                setIdentity(null)
+              }}
+              onKeyDown={(e) => e.key === 'Enter' && e.currentTarget.blur()}
+              enterKeyHint="done"
+              maxLength={40}
+              placeholder="Soy alguien que…"
+              className="w-full rounded-2xl bg-surface px-4 py-3 text-base text-neutral-800 outline-none ring-1 ring-black/5 placeholder:text-neutral-400"
+            />
+            <p className="mt-1.5 px-1 text-xs text-neutral-400">Cada acción de esta sección es un voto por esta identidad.</p>
+          </div>
+
           <div>
             <Label>Color</Label>
             <div className="flex flex-wrap gap-2.5">

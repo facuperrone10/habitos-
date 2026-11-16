@@ -7,6 +7,8 @@ export interface Section {
   color: string // hex
   order: number
   hidden: boolean
+  /** Frase de identidad (Hábitos atómicos): "Soy alguien activo". */
+  identity?: string | null
   createdAt: string
   archivedAt: string | null
 }
@@ -44,4 +46,12 @@ export interface Log {
 export interface Setting {
   key: string
   value: unknown
+}
+
+/** Registro de peso (v2). */
+export interface Measurement {
+  id: string
+  date: string // 'YYYY-MM-DD'
+  weightKg: number
+  createdAt: string
 }

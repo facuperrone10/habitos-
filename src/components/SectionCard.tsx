@@ -6,19 +6,21 @@ import { sectionIcon } from '../lib/icons'
 import { bump } from '../lib/motion'
 import { ActionChip } from './ActionChip'
 import { StreakBadge } from './StreakBadge'
+import { VotesCount } from './VotesCount'
 
 interface Props {
   data: SectionWithActions
   logsByAction: Map<string, Log>
   glowing: boolean
   sectionStreak: number
+  votes: number
   actionStreak: (actionId: string) => number
   onToggle: (action: Action) => void
   onEditValue: (action: Action) => void
   onEditSection: () => void
 }
 
-export function SectionCard({ data, logsByAction, glowing, sectionStreak, actionStreak, onToggle, onEditValue, onEditSection }: Props) {
+export function SectionCard({ data, logsByAction, glowing, sectionStreak, votes, actionStreak, onToggle, onEditValue, onEditSection }: Props) {
   const { section, actions } = data
   const Icon = sectionIcon(section.icon)
   const doneCount = actions.filter((a) => logsByAction.has(a.id)).length
@@ -40,7 +42,13 @@ export function SectionCard({ data, logsByAction, glowing, sectionStreak, action
         <span className="section-icon">
           <Icon size={16} strokeWidth={2.4} />
         </span>
-        <h2 className="flex-1 text-[15px] font-semibold tracking-tight text-neutral-800">{section.name}</h2>
+        <div className="min-w-0 flex-1">
+          <h2 className="truncate text-[15px] leading-tight font-semibold tracking-tight text-neutral-800">{section.name}</h2>
+          <div className="truncate text-xs text-neutral-400">
+            <VotesCount value={votes} color={section.color} />
+            {section.identity ? ` · ${section.identity}` : ''}
+          </div>
+        </div>
         <StreakBadge value={sectionStreak} color={section.color} />
         <span
           ref={countRef}
