@@ -133,3 +133,14 @@ export async function addMeasurement(date: string, weightKg: number) {
 }
 
 export const deleteMeasurement = (id: string) => db.measurements.delete(id)
+
+// ---------- Temporizador ----------
+
+/** Suma minutos a una acción en un día (la marca como hecha si no lo estaba). */
+export async function addMinutes(date: string, actionId: string, minutes: number) {
+  await db.transaction('rw', db.logs, async () => {
+    const log = await db.logs.where('[date+actionId]').equals([date, actionId]).first()
+    if (log) await db.logs.update(log.id, { value: (log.value ?? 0) + minutes })
+    else await db.logs.add({ id: crypto.randomUUID(), date, actionId, value: minutes, createdAt: nowIso() })
+  })
+}

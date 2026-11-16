@@ -1,6 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { BackupBanner } from '../components/BackupBanner'
+import { FocusPicker } from '../components/FocusPicker'
 import { OnePercentCard } from '../components/OnePercentCard'
+import type { TechniqueId } from '../lib/focus'
+import { unlockAudio } from '../lib/sound'
 import type { IndexPoint } from '../lib/onePercent'
 import { DateHeader } from '../components/DateHeader'
 import { EditSectionSheet } from '../components/EditSectionSheet'
@@ -25,9 +28,10 @@ interface Props {
   setDate: (date: string) => void
   indexPoints: IndexPoint[]
   onOpenStats: () => void
+  onStartFocus: (actionId: string, techniqueId: TechniqueId) => void
 }
 
-export function TodayScreen({ date, setDate, indexPoints, onOpenStats }: Props) {
+export function TodayScreen({ date, setDate, indexPoints, onOpenStats, onStartFocus }: Props) {
   const today = useToday()
   const data = useDayData(date)
   const history = useHistory()
@@ -35,6 +39,7 @@ export function TodayScreen({ date, setDate, indexPoints, onOpenStats }: Props) 
 
   const [editing, setEditing] = useState<Action | null>(null)
   const [editingSection, setEditingSection] = useState<Section | null>(null)
+  const [timerFor, setTimerFor] = useState<Action | null>(null)
   const [glowId, setGlowId] = useState<string | null>(null)
   const [toast, setToast] = useState<ToastData | null>(null)
   const clearToast = useCallback(() => setToast(null), [])
@@ -108,6 +113,7 @@ export function TodayScreen({ date, setDate, indexPoints, onOpenStats }: Props) 
           onToggle={onToggle}
           onEditValue={setEditing}
           onEditSection={() => setEditingSection(s.section)}
+          onStartTimer={setTimerFor}
         />
       ))}
 
@@ -122,6 +128,23 @@ export function TodayScreen({ date, setDate, indexPoints, onOpenStats }: Props) 
           onClose={() => setEditing(null)}
         />
       )}
+
+      {timerFor && (() => {
+        const sec = data.sections.find((x) => x.section.id === timerFor.sectionId)?.section
+        return (
+          <FocusPicker
+            action={timerFor}
+            color={sec?.color ?? '#1f2328'}
+            sectionName={sec?.name ?? ''}
+            onClose={() => setTimerFor(null)}
+            onStart={(tid) => {
+              unlockAudio() // iOS solo habilita el sonido dentro de un toque
+              onStartFocus(timerFor.id, tid)
+              setTimerFor(null)
+            }}
+          />
+        )
+      })()}
 
       {editingSection && (
         <EditSectionSheet section={editingSection} onClose={() => setEditingSection(null)} />

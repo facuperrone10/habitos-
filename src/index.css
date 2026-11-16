@@ -130,6 +130,21 @@ button, label { -webkit-user-select: none; user-select: none; cursor: pointer; }
   animation: value-in 220ms ease-out;
 }
 @keyframes value-in { from { opacity: 0; transform: translateX(-6px); } }
+/* Si hay botón de cronómetro, el valor no cierra la pastilla. */
+.chip-wrap:has(.chip-timer) .chip-value { border-radius: 0; padding-right: 10px; }
+
+/* Botón de cronómetro (última parte de la pastilla). */
+.chip-timer {
+  min-height: 46px; padding: 0 13px 0 10px; display: flex; align-items: center;
+  border-top-right-radius: 9999px; border-bottom-right-radius: 9999px;
+  color: white; background: color-mix(in srgb, var(--c) 68%, black);
+}
+.chip-timer--solo {
+  color: color-mix(in srgb, var(--c) 75%, var(--ink));
+  background: color-mix(in srgb, var(--c) 16%, var(--surface));
+  box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--c) 22%, var(--surface));
+}
+.chip-wrap[data-done="true"] .chip-timer--solo { color: white; background: color-mix(in srgb, var(--c) 68%, black); box-shadow: none; }
 
 /* Ráfaga de partículas. */
 .chip-burst { position: absolute; left: 50%; top: 50%; pointer-events: none; }

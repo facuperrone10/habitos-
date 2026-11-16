@@ -18,9 +18,10 @@ interface Props {
   onToggle: (action: Action) => void
   onEditValue: (action: Action) => void
   onEditSection: () => void
+  onStartTimer: (action: Action) => void
 }
 
-export function SectionCard({ data, logsByAction, glowing, sectionStreak, votes, actionStreak, onToggle, onEditValue, onEditSection }: Props) {
+export function SectionCard({ data, logsByAction, glowing, sectionStreak, votes, actionStreak, onToggle, onEditValue, onEditSection, onStartTimer }: Props) {
   const { section, actions } = data
   const Icon = sectionIcon(section.icon)
   const doneCount = actions.filter((a) => logsByAction.has(a.id)).length
@@ -84,6 +85,7 @@ export function SectionCard({ data, logsByAction, glowing, sectionStreak, votes,
               streak={actionStreak(a.id)}
               onToggle={onToggle}
               onEditValue={onEditValue}
+              onStartTimer={onStartTimer}
             />
           )
         })}

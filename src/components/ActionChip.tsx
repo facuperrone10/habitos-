@@ -1,4 +1,4 @@
-import { Flame } from 'lucide-react'
+import { Flame, Timer } from 'lucide-react'
 import { useRef, useState, type CSSProperties, type PointerEvent } from 'react'
 import type { Action } from '../db/types'
 import { pop, prefersReducedMotion } from '../lib/motion'
@@ -11,6 +11,7 @@ interface Props {
   streak: number
   onToggle: (action: Action) => void
   onEditValue: (action: Action) => void
+  onStartTimer: (action: Action) => void
 }
 
 const PARTICLES = 8
@@ -20,7 +21,7 @@ const PARTICLES = 8
  * el tap real del usuario activa ese interruptor nativo y iOS dispara la vibración
  * (Taptic Engine). Si Safari deja de hacerlo, todo lo visual sigue funcionando.
  */
-export function ActionChip({ action, color, done, value, streak, onToggle, onEditValue }: Props) {
+export function ActionChip({ action, color, done, value, streak, onToggle, onEditValue, onStartTimer }: Props) {
   const wrapRef = useRef<HTMLDivElement>(null)
   const [burst, setBurst] = useState(0)
 
@@ -40,10 +41,11 @@ export function ActionChip({ action, color, done, value, streak, onToggle, onEdi
   }
 
   const showValue = done && action.hasValue
+  const hasTimer = action.hasValue && action.unit === 'min'
 
   return (
     <div ref={wrapRef} className="chip-wrap" data-done={done} style={{ '--c': color } as CSSProperties}>
-      <label className={`chip ${showValue ? 'chip--with-value' : ''}`} onPointerDown={setOrigin}>
+      <label className={`chip ${showValue || hasTimer ? 'chip--with-value' : ''}`} onPointerDown={setOrigin}>
         <input
           type="checkbox"
           className="haptic-switch"
@@ -76,6 +78,16 @@ export function ActionChip({ action, color, done, value, streak, onToggle, onEdi
       {showValue && (
         <button type="button" className="chip-value" onClick={() => onEditValue(action)}>
           {value != null ? `${formatValue(value)} ${action.unit ?? ''}` : `+ ${action.unit ?? ''}`}
+        </button>
+      )}
+      {hasTimer && (
+        <button
+          type="button"
+          aria-label={`Medir minutos de ${action.name}`}
+          className={`chip-timer ${showValue ? '' : 'chip-timer--solo'}`}
+          onClick={() => onStartTimer(action)}
+        >
+          <Timer size={18} strokeWidth={2.3} />
         </button>
       )}
     </div>

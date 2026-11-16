@@ -1,5 +1,10 @@
 import { useCallback, useMemo, useState } from 'react'
 import { AchievementToast } from './components/AchievementToast'
+import { FocusOverlay } from './components/FocusOverlay'
+import { Toast, type ToastData } from './components/Toast'
+import { addMinutes } from './db/repo'
+import { setSetting, useSetting } from './hooks/useSetting'
+import type { FocusSession, TechniqueId } from './lib/focus'
 import { BottomNav, type Tab } from './components/BottomNav'
 import { UpdatePrompt } from './components/UpdatePrompt'
 import { useAchievementWatcher } from './hooks/useAchievementWatcher'
@@ -29,6 +34,29 @@ export default function App() {
   )
   const { current: unlock, next: nextUnlock } = useAchievementWatcher(achievements)
 
+  // Sesión de foco: se guarda en la base para sobrevivir si iOS cierra la app.
+  const focus = useSetting<FocusSession | null>('focusSession', null)
+  const [focusMin, setFocusMin] = useState(false)
+  const [toast, setToast] = useState<ToastData | null>(null)
+  const clearToast = useCallback(() => setToast(null), [])
+  const focusAction = focus ? data?.actions.find((a) => a.id === focus.actionId) : undefined
+  const focusColor = focusAction ? data?.sections.find((s) => s.id === focusAction.sectionId)?.color ?? '#1f2328' : '#1f2328'
+
+  const startFocus = (actionId: string, techniqueId: TechniqueId) => {
+    setFocusMin(false)
+    setSetting('focusSession', { actionId, techniqueId, date, startedAt: Date.now() } satisfies FocusSession)
+  }
+  const finishFocus = async (minutes: number) => {
+    if (!focus) return
+    await setSetting('focusSession', null)
+    if (minutes < 1) {
+      setToast({ id: Date.now(), text: 'Menos de 1 minuto: no se guardó', color: '#6E7781' })
+      return
+    }
+    await addMinutes(focus.date, focus.actionId, minutes)
+    setToast({ id: Date.now(), text: `+${minutes} min · ${focusAction?.name ?? ''}`, color: focusColor })
+  }
+
   const go = useCallback((t: Tab, view?: StatsView) => {
     if (view) setStatsView(view)
     setTab(t)
@@ -45,7 +73,7 @@ export default function App() {
       <UpdatePrompt />
       <AchievementToast event={unlock} onDone={nextUnlock} onOpen={() => go('stats', 'logros')} />
       <main className="mx-auto max-w-md px-4 pt-[calc(env(safe-area-inset-top)+12px)] pb-[calc(env(safe-area-inset-bottom)+96px)]">
-        {tab === 'hoy' && <TodayScreen date={date} setDate={setDate} indexPoints={indexPoints} onOpenStats={() => go('stats', 'progreso')} />}
+        {tab === 'hoy' && <TodayScreen date={date} setDate={setDate} indexPoints={indexPoints} onOpenStats={() => go('stats', 'progreso')} onStartFocus={startFocus} />}
         {tab === 'calendario' && (
           <CalendarScreen
             onSelectDay={(d) => {
@@ -60,6 +88,18 @@ export default function App() {
         {tab === 'ajustes' && <SettingsScreen />}
       </main>
       <BottomNav tab={tab} onChange={changeTab} />
+      {focus && focusAction && (
+        <FocusOverlay
+          session={focus}
+          actionName={focusAction.name}
+          color={focusColor}
+          minimized={focusMin}
+          onMinimize={setFocusMin}
+          onFinish={finishFocus}
+          onCancel={() => setSetting('focusSession', null)}
+        />
+      )}
+      <Toast toast={toast} onDone={clearToast} />
     </>
   )
 }

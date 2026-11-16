@@ -14,7 +14,7 @@ export function OnePercentCard({ points, onOpen }: { points: IndexPoint[]; onOpe
   const H = 34
   const xy = tail.map((v, i) => [tail.length === 1 ? W : (i / (tail.length - 1)) * W, H - ((v - min) / (max - min)) * (H - 4) - 2])
   const d = xy.map(([x, y], i) => `${i ? 'L' : 'M'}${x.toFixed(1)} ${y.toFixed(1)}`).join(' ')
-  const status = last.kind === 'good' ? '+1% hoy' : last.kind === 'pending' ? 'Hoy suma con el 50%' : ''
+  const status = last.kind === 'good' ? '+1% hoy' : last.kind === 'pending' ? 'Meta: 50% hoy' : ''
 
   return (
     <button
